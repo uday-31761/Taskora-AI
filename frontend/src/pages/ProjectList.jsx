@@ -2,13 +2,24 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import { useAuth } from '../context/AuthContext';
-import { FolderPlus, Users, Calendar, MoreVertical } from 'lucide-react';
+import {
+    FolderPlus,
+    Users,
+    Calendar,
+    ArrowRight
+} from 'lucide-react';
 
 const ProjectList = () => {
+
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
-    const [newProject, setNewProject] = useState({ name: '', description: '' });
+
+    const [newProject, setNewProject] = useState({
+        name: '',
+        description: ''
+    });
+
     const { user } = useAuth();
 
     useEffect(() => {
@@ -16,173 +27,295 @@ const ProjectList = () => {
     }, []);
 
     const fetchProjects = async () => {
+
         try {
+
             const response = await api.get('/projects');
             setProjects(response.data);
+
         } catch (error) {
+
             console.error("Error fetching projects", error);
+
         } finally {
+
             setLoading(false);
+
         }
     };
 
     const handleCreateProject = async (e) => {
+
         e.preventDefault();
+
         try {
+
             await api.post('/projects', newProject);
+
             setShowModal(false);
-            setNewProject({ name: '', description: '' });
+
+            setNewProject({
+                name: '',
+                description: ''
+            });
+
             fetchProjects();
+
         } catch (error) {
+
             console.error("Error creating project", error);
+
         }
     };
 
     if (loading) {
+
         return (
-            <div className="flex justify-center items-center h-full">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+
+            <div className="min-h-screen bg-[#030712] flex items-center justify-center">
+
+                <div className="w-14 h-14 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+
             </div>
+
         );
     }
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
 
-            {/* HEADER (FIXED + MODERN) */}
-            <div className="flex justify-between items-center bg-gradient-to-r from-slate-950 via-slate-900 to-slate-800 p-6 rounded-2xl shadow-xl border border-white/10">
+        <div className="min-h-screen bg-[#030712] text-white px-4 sm:px-6 lg:px-10 py-6 overflow-x-hidden">
 
-                <div>
-                    <h1 className="text-3xl font-bold text-white tracking-wide">
-                        Projects
-                    </h1>
-                    <p className="text-gray-300 text-sm mt-1">
-                        Manage your projects and collaborations.
-                    </p>
+            {/* HEADER */}
+
+            <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-white/5 backdrop-blur-xl p-5 sm:p-7 mb-8 shadow-2xl">
+
+                {/* GLOW */}
+                <div className="absolute top-0 right-0 w-72 h-72 bg-blue-500/20 blur-[120px] rounded-full"></div>
+
+                <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+
+                    {/* LEFT */}
+                    <div>
+
+                        <p className="text-blue-400 uppercase tracking-[3px] text-xs mb-2">
+                            Workspace
+                        </p>
+
+                        <h1 className="text-3xl sm:text-4xl font-bold">
+                            Team Projects
+                        </h1>
+
+                        <p className="text-gray-400 mt-2 text-sm sm:text-base">
+                            Manage tasks, teams, and project workflows efficiently.
+                        </p>
+
+                    </div>
+
+                    {/* BUTTON */}
+                    {user?.role === 'ADMIN' && (
+
+                        <button
+                            onClick={() => setShowModal(true)}
+                            className="bg-gradient-to-r from-blue-500 to-purple-600 hover:scale-[1.02] transition-all px-5 py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 shadow-2xl w-full sm:w-auto"
+                        >
+                            <FolderPlus size={18} />
+                            Create Project
+                        </button>
+
+                    )}
+
                 </div>
 
-                {user?.role === 'ADMIN' && (
-                    <button
-                        onClick={() => setShowModal(true)}
-                        className="bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-xl font-medium transition-all flex items-center gap-2 border border-white/20 backdrop-blur-md"
-                    >
-                        <FolderPlus size={18} />
-                        Add Project
-                    </button>
-                )}
             </div>
 
             {/* PROJECT GRID */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                {projects.map((project) => (
-                    <Link key={project.id} to={`/projects/${project.id}`} className="group">
+            {projects.length > 0 ? (
 
-                        <div className="relative bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
 
-                            {/* LEFT ACCENT */}
-                            <div className="absolute left-0 top-0 w-1 h-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-all"></div>
+                    {projects.map((project) => (
 
-                            {/* TOP */}
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xl group-hover:bg-blue-600 group-hover:text-white transition-all">
-                                    {project.name.charAt(0)}
+                        <Link
+                            key={project.id}
+                            to={`/projects/${project.id}`}
+                            className="group"
+                        >
+
+                            <div className="relative h-full overflow-hidden rounded-[28px] border border-white/10 bg-white/5 backdrop-blur-xl p-5 hover:border-blue-500/40 transition-all duration-300 hover:-translate-y-1 shadow-xl">
+
+                                {/* TOP */}
+
+                                <div className="flex items-start justify-between mb-5">
+
+                                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-xl font-bold shadow-lg shrink-0">
+                                        {project.name?.charAt(0)}
+                                    </div>
+
+                                    <div className="bg-white/10 px-3 py-1 rounded-full text-xs text-gray-300">
+                                        Active
+                                    </div>
+
                                 </div>
 
-                                <button className="text-gray-400 hover:text-gray-700 p-2 rounded-lg hover:bg-gray-100 transition">
-                                    <MoreVertical size={18} />
-                                </button>
-                            </div>
+                                {/* CONTENT */}
 
-                            {/* CONTENT */}
-                            <h3 className="text-lg font-bold text-gray-900 mb-2">
-                                {project.name}
-                            </h3>
+                                <h2 className="text-xl font-bold mb-3 break-words group-hover:text-blue-400 transition-all">
+                                    {project.name}
+                                </h2>
 
-                            <p className="text-gray-500 text-sm line-clamp-2 mb-6">
-                                {project.description}
-                            </p>
+                                <p className="text-gray-400 text-sm leading-relaxed break-words min-h-[60px]">
+                                    {project.description || 'No description available'}
+                                </p>
 
-                            {/* FOOTER */}
-                            <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                                {/* FOOTER */}
 
-                                <div className="flex items-center gap-2 text-sm text-gray-500">
-                                    <Users size={16} />
-                                    <span>Team</span>
+                                <div className="flex items-center justify-between pt-5 mt-5 border-t border-white/10">
+
+                                    <div className="flex items-center gap-2 text-gray-400 text-sm">
+
+                                        <Users size={15} />
+
+                                        <span>
+                                            Team
+                                        </span>
+
+                                    </div>
+
+                                    <div className="flex items-center gap-2 text-gray-400 text-sm">
+
+                                        <Calendar size={15} />
+
+                                        <span>
+                                            {project.createdAt
+                                                ? new Date(project.createdAt).toLocaleDateString()
+                                                : 'Today'}
+                                        </span>
+
+                                    </div>
+
                                 </div>
 
-                                <div className="flex items-center gap-2 text-sm text-gray-500">
-                                    <Calendar size={16} />
-                                    <span>
-                                        {new Date(project.createdAt).toLocaleDateString()}
+                                {/* OPEN */}
+
+                                <div className="mt-5 flex items-center justify-between">
+
+                                    <span className="text-sm text-blue-400 font-medium">
+                                        Open Project
                                     </span>
+
+                                    <div className="w-9 h-9 rounded-xl bg-blue-500/10 group-hover:bg-blue-500 flex items-center justify-center transition-all">
+
+                                        <ArrowRight
+                                            size={17}
+                                            className="text-blue-400 group-hover:text-white"
+                                        />
+
+                                    </div>
+
                                 </div>
 
                             </div>
-                        </div>
 
-                    </Link>
-                ))}
-            </div>
+                        </Link>
 
-            {/* EMPTY STATE */}
-            {projects.length === 0 && (
-                <div className="text-center py-20 bg-white/80 backdrop-blur rounded-2xl border border-gray-200 border-dashed">
-                    <FolderPlus size={50} className="mx-auto text-gray-300 mb-4" />
-                    <h3 className="text-lg font-semibold text-gray-800">
-                        No projects yet
-                    </h3>
-                    <p className="text-gray-500 mt-1">
-                        Create your first project to get started
-                    </p>
+                    ))}
+
                 </div>
+
+            ) : (
+
+                <div className="rounded-[28px] border border-dashed border-white/10 bg-white/5 backdrop-blur-xl py-20 px-6 text-center">
+
+                    <FolderPlus
+                        size={60}
+                        className="mx-auto text-gray-500 mb-5"
+                    />
+
+                    <h2 className="text-2xl font-bold mb-3">
+                        No Projects Yet
+                    </h2>
+
+                    <p className="text-gray-400 max-w-md mx-auto">
+                        Start by creating your first team project and begin collaborating with your members.
+                    </p>
+
+                </div>
+
             )}
 
             {/* MODAL */}
+
             {showModal && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
 
-                    <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in zoom-in-95">
+                <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
 
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                            Create Project
+                    <div className="w-full max-w-md rounded-[30px] border border-white/10 bg-[#0f172a] p-6 sm:p-8 shadow-2xl">
+
+                        <h2 className="text-2xl font-bold mb-6">
+                            Create New Project
                         </h2>
 
-                        <form onSubmit={handleCreateProject} className="space-y-5">
+                        <form
+                            onSubmit={handleCreateProject}
+                            className="space-y-5"
+                        >
 
-                            <input
-                                type="text"
-                                placeholder="Project Name"
-                                required
-                                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
-                                value={newProject.name}
-                                onChange={(e) =>
-                                    setNewProject({ ...newProject, name: e.target.value })
-                                }
-                            />
+                            <div>
 
-                            <textarea
-                                placeholder="Description"
-                                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none min-h-[100px]"
-                                value={newProject.description}
-                                onChange={(e) =>
-                                    setNewProject({ ...newProject, description: e.target.value })
-                                }
-                            />
+                                <label className="block text-sm text-gray-400 mb-2">
+                                    Project Name
+                                </label>
 
-                            <div className="flex gap-3 pt-4">
+                                <input
+                                    type="text"
+                                    required
+                                    placeholder="Enter project name"
+                                    value={newProject.name}
+                                    onChange={(e) =>
+                                        setNewProject({
+                                            ...newProject,
+                                            name: e.target.value
+                                        })
+                                    }
+                                    className="w-full bg-[#111827] border border-white/10 rounded-2xl px-4 py-3 outline-none focus:border-blue-500 transition-all"
+                                />
+
+                            </div>
+
+                            <div>
+
+                                <label className="block text-sm text-gray-400 mb-2">
+                                    Description
+                                </label>
+
+                                <textarea
+                                    placeholder="Enter project description"
+                                    value={newProject.description}
+                                    onChange={(e) =>
+                                        setNewProject({
+                                            ...newProject,
+                                            description: e.target.value
+                                        })
+                                    }
+                                    className="w-full bg-[#111827] border border-white/10 rounded-2xl px-4 py-3 outline-none focus:border-blue-500 transition-all min-h-[120px] resize-none"
+                                />
+
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row gap-3 pt-3">
 
                                 <button
                                     type="button"
                                     onClick={() => setShowModal(false)}
-                                    className="flex-1 px-4 py-3 border rounded-xl hover:bg-gray-50"
+                                    className="flex-1 bg-white/10 hover:bg-white/20 py-3 rounded-2xl transition-all"
                                 >
                                     Cancel
                                 </button>
 
                                 <button
                                     type="submit"
-                                    className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700"
+                                    className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:scale-[1.02] py-3 rounded-2xl font-semibold transition-all"
                                 >
                                     Create
                                 </button>
@@ -192,7 +325,9 @@ const ProjectList = () => {
                         </form>
 
                     </div>
+
                 </div>
+
             )}
 
         </div>
