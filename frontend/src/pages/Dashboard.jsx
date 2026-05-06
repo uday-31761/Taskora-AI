@@ -87,52 +87,100 @@ const Dashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                 {/* Pie */}
-                <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-3xl p-6 h-[420px]">
-                    <h2 className="text-lg font-semibold mb-4 text-gray-200">
+                <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-3xl p-4 sm:p-6 h-[320px] sm:h-[420px] overflow-hidden">
+
+                    <h2 className="text-base sm:text-lg font-semibold mb-4 text-gray-200">
                         Task Status Distribution
                     </h2>
 
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height="90%">
+
                         <PieChart>
+
                             <Pie
                                 data={pieData}
                                 cx="50%"
-                                cy="50%"
-                                innerRadius={70}
-                                outerRadius={110}
+                                cy="45%"
+                                innerRadius={window.innerWidth < 640 ? 40 : 70}
+                                outerRadius={window.innerWidth < 640 ? 65 : 110}
                                 paddingAngle={5}
                                 dataKey="value"
                             >
+
                                 {pieData.map((_, i) => (
                                     <Cell key={i} fill={COLORS[i]} />
                                 ))}
+
                             </Pie>
 
                             <Tooltip />
-                            <Legend />
+
+                            <Legend
+                                verticalAlign="bottom"
+                                height={36}
+                                wrapperStyle={{
+                                    fontSize: '12px'
+                                }}
+                            />
+
                         </PieChart>
+
                     </ResponsiveContainer>
+
                 </div>
 
                 {/* Bar */}
-                <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-3xl p-6 h-[420px]">
-                    <h2 className="text-lg font-semibold mb-4 text-gray-200">
+                <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-3xl p-4 sm:p-6 h-[320px] sm:h-[420px] overflow-hidden">
+
+                    <h2 className="text-base sm:text-lg font-semibold mb-4 text-gray-200">
                         Tasks Overview
                     </h2>
 
-                    <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={pieData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                            <XAxis dataKey="name" stroke="#94a3b8" />
-                            <YAxis stroke="#94a3b8" />
+                    <ResponsiveContainer width="100%" height="90%">
+
+                        <BarChart
+                            data={pieData}
+                            margin={{
+                                top: 10,
+                                right: 10,
+                                left: -25,
+                                bottom: 5
+                            }}
+                        >
+
+                            <CartesianGrid
+                                strokeDasharray="3 3"
+                                stroke="#334155"
+                            />
+
+                            <XAxis
+                                dataKey="name"
+                                stroke="#94a3b8"
+                                tick={{ fontSize: 11 }}
+                            />
+
+                            <YAxis
+                                stroke="#94a3b8"
+                                tick={{ fontSize: 11 }}
+                            />
+
                             <Tooltip />
-                            <Bar dataKey="value" radius={[10, 10, 0, 0]}>
+
+                            <Bar
+                                dataKey="value"
+                                radius={[10, 10, 0, 0]}
+                            >
+
                                 {pieData.map((_, i) => (
                                     <Cell key={i} fill={COLORS[i]} />
                                 ))}
+
                             </Bar>
+
                         </BarChart>
+
                     </ResponsiveContainer>
+
                 </div>
             </div>
         </div>
